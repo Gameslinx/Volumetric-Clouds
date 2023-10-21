@@ -66,6 +66,7 @@
     <Compile Include="Assets\Scripts\GenerateWorley3D.cs" />
     <Compile Include="Assets\Scripts\NoiseLibrary\TextureGenerator.cs" />
     <Compile Include="Assets\Scripts\TexCombiner.cs" />
+    <Compile Include="Assets\Scripts\Slice.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Shaders\CloudUtils.cginc" />

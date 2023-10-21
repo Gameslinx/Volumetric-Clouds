@@ -27,24 +27,41 @@ public class SubGrid3D
     }
 }
 
-public class GenerateWorley3D : MonoBehaviour
+public class GenerateWorley3D : EditorWindow
 {
-    [SerializeField]
-    public Texture3D texture;
+    static private GenerateWorley3D mWindow;
 
-    public int numGrids;
-    public int gridSize;
-    public SubGrid3D[,,] grids;
-    public SubGrid3D[,,] copiedGrids;
+    public static Texture3D texture;
 
-    private void Start()
+    public static int numGrids;
+    public static int gridSize;
+    public static SubGrid3D[,,] grids;
+    public static SubGrid3D[,,] copiedGrids;
+
+    string path = "Assets/Textures/WorleyNoises/Separate.asset";
+
+    [MenuItem("Generate/Worley Noise")]
+    private static void Initialize()
     {
-        this.gameObject.SetActive(false);
+        mWindow = GetWindow<GenerateWorley3D>("Worley Texture Generator");
+        mWindow.Show();
+    }
+    public void OnGUI()
+    {
+        EditorGUI.BeginChangeCheck();
+        path = EditorGUILayout.TextField("path", path);
+        numGrids = EditorGUILayout.IntField("numGrids", numGrids);
+        gridSize = EditorGUILayout.IntField("gridSize", gridSize);
+        EditorGUILayout.LabelField("Resolution: " + (numGrids * gridSize));
+        if (GUILayout.Button("Generate"))
+        {
+            Generate();
+        }
     }
     public void Generate()
     {
         // Generate grids
-        Random.InitState(1);
+        //Random.InitState(1);
 
         grids = new SubGrid3D[numGrids, numGrids, numGrids];
         for (int i = 0; i < numGrids; i++)
@@ -118,14 +135,24 @@ public class GenerateWorley3D : MonoBehaviour
 
                     float dist = GetDistToClosest(gridIndexX, gridIndexY, gridIndexZ, i + centralGridStartX * gridSize, j + centralGridStartY * gridSize, k + centralGridStartZ * gridSize);
 
-                    texture.SetPixel(i, j, k, Color.white - Color.white * dist / maxPossibleDist);
+                    texture.SetPixel(i, j, k, Color.white - Color.white * dist / (maxPossibleDist / 1.5f));
                 }
             }
         }
 
         texture.Apply();
-        GetComponent<MeshRenderer>().sharedMaterial.mainTexture = texture;
-        AssetDatabase.CreateAsset(texture, "Assets/Textures/Worley.asset");
+        Texture2D slice = new Texture2D(texture.width, texture.height, TextureFormat.RGBA32, false);
+        for (int i = 0; i < texture.width; i++)
+        {
+            for (int j = 0;j < texture.height; j++)
+            {
+                float col = texture.GetPixel(i, j, texture.depth / 2).r;
+                slice.SetPixel(i, j, Color.white  * col);
+            }
+        }
+        slice.Apply();
+        GameObject.Find("WorleyPlane").GetComponent<MeshRenderer>().sharedMaterial.mainTexture = slice;
+        AssetDatabase.CreateAsset(texture, path);
     }
     public float GetDistToClosest(int gridX, int gridY, int gridZ, int pixelX, int pixelY, int pixelZ)
     {
@@ -154,22 +181,5 @@ public class GenerateWorley3D : MonoBehaviour
             }
         }
         return dist;
-    }
-}
-
-[CustomEditor(typeof(GenerateWorley3D))]
-public class Generate3DWorleyButton : Editor
-{
-    public override void OnInspectorGUI()
-    {
-        base.OnInspectorGUI();
-        GenerateWorley3D generateWorley = target as GenerateWorley3D;
-        generateWorley.texture = (Texture3D)EditorGUILayout.ObjectField("Texture", generateWorley.texture, typeof(Texture3D), false);
-        //generateWorley.dim = (int)EditorGUILayout.Slider(generateWorley.dim, 1, 1024);
-        if (GUILayout.Button("Generate"))
-        {
-            
-            generateWorley.Generate();
-        }
     }
 }

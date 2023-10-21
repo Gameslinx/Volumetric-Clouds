@@ -18,7 +18,7 @@ public class Noise3DTextureGenerator : EditorWindow
 	static public Vector3 shift = new Vector3(0, 0, 0);
 	static public Vector3 tiling = new Vector3(0.4f, 0.4f, 0.4f);
 
-	[MenuItem("Window/Noise3d Texture Generator")]
+	[MenuItem("Generate/FBM Noise")]
 
 	private static void Init() {
 		mWindow = GetWindow<Noise3DTextureGenerator>("Noise3d Texture Generator");

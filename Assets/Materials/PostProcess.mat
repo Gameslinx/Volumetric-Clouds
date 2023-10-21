@@ -92,7 +92,7 @@ Material:
     - _DensityFactor: 1.67
     - _DensityThreshold: 0.508
     - _DetailNormalMapScale: 1
-    - _DetailScale: 0.2
+    - _DetailScale: 0.297
     - _DstBlend: 0
     - _ForwardScatteringAmount: -0.92
     - _GlossMapScale: 1
